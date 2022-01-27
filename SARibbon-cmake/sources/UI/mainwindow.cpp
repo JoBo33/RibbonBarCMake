@@ -55,7 +55,6 @@ MainWindow::MainWindow(QWidget *par) : SARibbonMainWindow(par)
     PRINT_COST(cost, lastTimes, "setCentralWidget & setWindowTitle");
     SARibbonBar *ribbon = ribbonBar();
 
-    //添加方法1
     ribbon->applicationButton()->setText(("File"));
     SARibbonCategory *categoryMain = ribbon->addCategoryPage(("Main"));
 
@@ -63,7 +62,6 @@ MainWindow::MainWindow(QWidget *par) : SARibbonMainWindow(par)
     createCategoryMain(categoryMain);
     PRINT_COST(cost, lastTimes, "add main page element");
 
-    //添加方法2
     SARibbonCategory *categoryOther = new SARibbonCategory();
 
     categoryOther->setCategoryName(("Other"));
@@ -72,7 +70,6 @@ MainWindow::MainWindow(QWidget *par) : SARibbonMainWindow(par)
     createCategoryOther(categoryOther);
     PRINT_COST(cost, lastTimes, "add other page");
 
-    //添加第三个标签，用于测试删除
     SARibbonCategory *categoryDelete = new SARibbonCategory();
 
     categoryDelete->setCategoryName(("Delete"));
@@ -80,7 +77,6 @@ MainWindow::MainWindow(QWidget *par) : SARibbonMainWindow(par)
     ribbon->addCategoryPage(categoryDelete);
     createCategoryDelete(categoryDelete);
 
-    //上下文标签
     m_contextCategory = ribbon->addContextCategory(("context"), QColor(), 1);
     SARibbonCategory *contextCategoryPage1 = m_contextCategory->addCategoryPage(("Page1"));
 
@@ -119,8 +115,8 @@ MainWindow::MainWindow(QWidget *par) : SARibbonMainWindow(par)
     connect(customize, &QAction::triggered, this, [&]() {
         if (nullptr == m_customizeWidget) {
             m_customizeWidget = new SARibbonCustomizeWidget(this, this, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint | Qt::Dialog);
-            m_customizeWidget->setWindowModality(Qt::ApplicationModal);     //设置阻塞类型
-            m_customizeWidget->setAttribute(Qt::WA_ShowModal, true);        //属性设置 true:模态 false:非模态
+            m_customizeWidget->setWindowModality(Qt::ApplicationModal);     
+            m_customizeWidget->setAttribute(Qt::WA_ShowModal, true);        
             m_customizeWidget->setupActionsManager(m_actMgr);
         }
         m_customizeWidget->show();
@@ -560,41 +556,38 @@ void MainWindow::createCategoryOther(SARibbonCategory *page)
     useCustomize->setObjectName(("useCustomize"));
     pannel->addLargeAction(useCustomize);
     connect(useCustomize, &QAction::triggered, this, [&]() {
-        //只能调用一次
         static bool has_call = false;
         if (!has_call) {
             has_call = sa_apply_customize_from_xml_file("customize.xml", this, m_actMgr);
         }
     });
 
-    QAction *normalButton = new QAction(QIcon(":/icon/icon/506354.png"), ("正常模式"), this);
+    QAction *normalButton = new QAction(QIcon(":/icon/icon/506354.png"), ("text"), this);
 
     normalButton->setObjectName(("normalButton"));
     pannel->addLargeAction(normalButton);
     connect(normalButton, &QAction::triggered, this, [&]() {
-        //最大最小关闭按钮都有
         Qt::WindowFlags f = windowFlags();
         f |= (Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
         updateWindowFlag(f);
     });
 
-    QAction *noneButton = new QAction(QIcon(":/icon/icon/506462.png"), ("无按钮模式"), this);
+    QAction *noneButton = new QAction(QIcon(":/icon/icon/506462.png"), ("text"), this);
 
     noneButton->setObjectName(("noneButton"));
     pannel->addLargeAction(noneButton);
     connect(noneButton, &QAction::triggered, this, [&]() {
-        //由于已经处于frameless状态，这个最大最小设置是无效的
         //setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint&~Qt::WindowMinimizeButtonHint);
         Qt::WindowFlags f = windowFlags();
         f &= ~Qt::WindowMinMaxButtonsHint& ~Qt::WindowCloseButtonHint;
         updateWindowFlag(f);
     });
-    QAction *changename = new QAction(QIcon(":/icon/icon/529398.png"), ("改变pannel名字"), this);
+    QAction *changename = new QAction(QIcon(":/icon/icon/529398.png"), ("pannel"), this);
 
     changename->setObjectName(("changename"));
     pannel->addLargeAction(changename);
     connect(changename, &QAction::triggered, this, [pannel]() {
-        pannel->setPannelName(("改变pannel名字"));
+        pannel->setPannelName(("pannel"));
     });
 
     pannel = new SARibbonPannel(("ContextCategory"));
@@ -620,18 +613,18 @@ void MainWindow::createCategoryDelete(SARibbonCategory *page)
 {
     SARibbonPannel *pannel1 = new SARibbonPannel(("pannel 1"));
     SARibbonPannel *pannel2 = new SARibbonPannel(("pannel 2"));
-    QAction *act1 = new QAction(("删除Pannel2"), this);
+    QAction *act1 = new QAction(("Pannel2"), this);
 
-    act1->setObjectName(("删除Pannel2"));
+    act1->setObjectName(("Pannel2"));
     act1->setIcon(QIcon(":/icon/icon/506356.png"));
     connect(act1, &QAction::triggered, this, [page, pannel2]() {
         page->removePannel(pannel2);
     });
     pannel1->addLargeAction(act1);
 
-    QAction *act2 = new QAction(("删除本页"), this);
+    QAction *act2 = new QAction(("text"), this);
 
-    act2->setObjectName(("删除本页"));
+    act2->setObjectName(("text"));
     act2->setIcon(QIcon(":/icon/icon/506357.png"));
     connect(act2, &QAction::triggered, this, [this, page, act2]() {
         this->ribbonBar()->removeCategory(page);
@@ -648,12 +641,12 @@ void MainWindow::createCategoryDelete(SARibbonCategory *page)
 
 void MainWindow::createContextCategoryPage1(SARibbonCategory *page)
 {
-    SARibbonPannel *pannel = page->addPannel(("显示隐藏操作"));
+    SARibbonPannel *pannel = page->addPannel(("text"));
     QAction *act = new QAction(this);
 
     act->setCheckable(true);
     act->setIcon(QIcon(":/icon/icon/530150.png"));
-    act->setText(("隐藏pannel"));
+    act->setText(("pannel"));
     pannel->addLargeAction(act);
 
     QAction *act2 = new QAction(this);
@@ -669,7 +662,7 @@ void MainWindow::createContextCategoryPage1(SARibbonCategory *page)
     QAction *act21 = new QAction(this);
 
     act21->setIcon(QIcon(":/icon/icon/529398.png"));
-    act21->setText(("解锁左边的按钮"));
+    act21->setText(("text"));
     act21->setShortcut(QKeySequence(QLatin1String("Ctrl+E")));
     pannel->addLargeAction(act21);
     connect(act21, &QAction::triggered, this, [act2](bool b) {
@@ -682,46 +675,45 @@ void MainWindow::createContextCategoryPage1(SARibbonCategory *page)
 
     act3->setCheckable(true);
     act3->setIcon(QIcon(":/icon/icon/530767.png"));
-    act3->setText(("setText测试\r\nCtrl+D"));
+    act3->setText(("setText\r\nCtrl+D"));
     act3->setShortcut(QKeySequence(QLatin1String("Ctrl+D")));
     pannel->addLargeAction(act3);
 
     connect(act3, &QAction::toggled, this, [act3](bool b) {
         if (b) {
-            act3->setText(("点击了"));
+            act3->setText(("text"));
         }else{
-            act3->setText(("setText测试"));
+            act3->setText(("setText"));
         }
     });
-    //隐藏pannel
     QAction *act4 = new QAction(this);
 
     act4->setCheckable(true);
     act4->setIcon(QIcon(":/icon/icon/arror.png"));
-    act4->setText(("显示旁边的pannel"));
+    act4->setText(("pannel"));
     pannel->addLargeAction(act4);
 
-    SARibbonPannel *pannel2 = page->addPannel(("用于隐藏显示的测试"));
+    SARibbonPannel *pannel2 = page->addPannel(("text"));
 
     pannel2->addLargeAction(act3);
 
     connect(act4, &QAction::toggled, this, [act4, pannel2, this](bool b) {
         pannel2->setVisible(!b);
         if (b) {
-            act4->setText(("隐藏旁边的pannel"));
+            act4->setText(("pannel"));
         }else{
-            act4->setText(("显示旁边的pannel"));
+            act4->setText(("pannel"));
         }
         ribbonBar()->repaint();
     });
 
-    SARibbonPannel *pannel3 = page->addPannel(("action隐藏显示的测试"));
+    SARibbonPannel *pannel3 = page->addPannel(("action"));
     QAction *act31 = new QAction(this);
 
     act31->setCheckable(true);
     act31->setChecked(true);
     act31->setIcon(QIcon(":/icon/icon/arror.png"));
-    act31->setText(("隐藏action2"));
+    act31->setText(("action2"));
     QAction *act32 = new QAction(this);
 
     act32->setIcon(QIcon(":/icon/icon/arror.png"));
@@ -741,10 +733,10 @@ void MainWindow::createContextCategoryPage1(SARibbonCategory *page)
     connect(act31, &QAction::triggered, this, [act31, act32](bool b) {
         if (b) {
             act32->setVisible(true);
-            act31->setText(("隐藏action2"));
+            act31->setText(("action2"));
         }else{
             act32->setVisible(false);
-            act31->setText(("显示action2"));
+            act31->setText(("action2"));
         }
     });
 }
@@ -752,17 +744,17 @@ void MainWindow::createContextCategoryPage1(SARibbonCategory *page)
 
 void MainWindow::createContextCategoryPage2(SARibbonCategory *page)
 {
-    SARibbonPannel *pannel1 = page->addPannel(("删除CategoryPage测试"));
+    SARibbonPannel *pannel1 = page->addPannel(("CategoryPage"));
     QAction *act11 = new QAction(this);
 
     act11->setIcon(QIcon(":/icon/icon/529398.png"));
-    act11->setText(("删除本页"));
+    act11->setText(("text"));
     pannel1->addLargeAction(act11);
     connect(act11, &QAction::triggered, this, [this, page]() {
         this->ribbonBar()->removeCategory(page);
         page->deleteLater();
     });
-    SARibbonPannel *pannel2 = page->addPannel(("特殊布局"));
+    SARibbonPannel *pannel2 = page->addPannel(("text"));
 
     pannel2->addAction(("Large"), QIcon(":/icon/icon/530767.png"), QToolButton::InstantPopup, SARibbonPannelItem::Large);
     pannel2->addAction(("Small"), QIcon(":/icon/icon/530767.png"), QToolButton::InstantPopup, SARibbonPannelItem::Small);
@@ -792,24 +784,22 @@ void MainWindow::createContextCategoryPage2(SARibbonCategory *page)
 
 void MainWindow::addSomeOtherAction()
 {
-    //添加其他的action，这些action并不在ribbon管理范围，主要用于SARibbonCustomizeWidget自定义用
     QAction *acttext1 = new QAction(("纯文本action1"), this);
     QAction *acttext2 = new QAction(("纯文本action2"), this);
     QAction *acttext3 = new QAction(("纯文本action3"), this);
     QAction *acttext4 = new QAction(("纯文本action4"), this);
     QAction *acttext5 = new QAction(("纯文本action5"), this);
 
-    QAction *actIcon1 = new QAction(QIcon(":/icon/icon/506353.png"), ("带图标action1"), this);
-    QAction *actIcon2 = new QAction(QIcon(":/icon/icon/506354.png"), ("带图标action2"), this);
-    QAction *actIcon3 = new QAction(QIcon(":/icon/icon/506355.png"), ("带图标action3"), this);
-    QAction *actIcon4 = new QAction(QIcon(":/icon/icon/506356.png"), ("带图标action4"), this);
+    QAction *actIcon1 = new QAction(QIcon(":/icon/icon/506353.png"), ("action1"), this);
+    QAction *actIcon2 = new QAction(QIcon(":/icon/icon/506354.png"), ("action2"), this);
+    QAction *actIcon3 = new QAction(QIcon(":/icon/icon/506355.png"), ("action3"), this);
+    QAction *actIcon4 = new QAction(QIcon(":/icon/icon/506356.png"), ("action4"), this);
 
     m_actionTagText = SARibbonActionsManager::UserDefineActionTag+1;
     m_actionTagWithIcon = SARibbonActionsManager::UserDefineActionTag+2;
 
-    m_actMgr = new SARibbonActionsManager(this);//申明过程已经自动注册所有action
+    m_actMgr = new SARibbonActionsManager(this);
 
-    //以下注册特别的action
     m_actMgr->registeAction(acttext1, SARibbonActionsManager::CommonlyUsedActionTag);
     m_actMgr->registeAction(acttext3, SARibbonActionsManager::CommonlyUsedActionTag);
     m_actMgr->registeAction(acttext5, SARibbonActionsManager::CommonlyUsedActionTag);
@@ -828,9 +818,9 @@ void MainWindow::addSomeOtherAction()
     m_actMgr->registeAction(actIcon4, m_actionTagWithIcon);
 
 
-    m_actMgr->setTagName(SARibbonActionsManager::CommonlyUsedActionTag, ("常用"));
-    m_actMgr->setTagName(m_actionTagText, ("无图标action"));
-    m_actMgr->setTagName(m_actionTagWithIcon, ("有图标action"));
+    m_actMgr->setTagName(SARibbonActionsManager::CommonlyUsedActionTag, ("text"));
+    m_actMgr->setTagName(m_actionTagText, ("action"));
+    m_actMgr->setTagName(m_actionTagWithIcon, ("action"));
 }
 
 
